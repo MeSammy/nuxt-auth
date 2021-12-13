@@ -7,16 +7,16 @@
       class="header--navebar"
     >
       <div class="container">
-        <nuxt-link class="navbar-brand" to="/">Movie-search</nuxt-link>
+        <nuxt-link class="navbar-brand" to="/">TMDB Movie-search</nuxt-link>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
         <b-collapse id="nav-collapse" is-nav>
           <b-nav-form class="ml-auto">
             <b-input-group
-              append-html="<b-button class='btn-search' type='submit' >Search</b-button>"
+              append-html="<button class='btn-search' type='submit' >Search</button>"
             >
-              <b-form-input placeholder="Search"></b-form-input>
+              <b-form-input placeholder="Search" name="search"></b-form-input>
               <!-- <b-button size="sm" class="my-2 my-sm-0" type="submit"
                 >Search</b-button
               > -->
@@ -37,6 +37,10 @@ export default {};
   &--navebar {
     background-color: black;
   }
+  .navbar-brand {
+    font-weight: 700;
+    font-size: 24px;
+  }
   .input-group-text {
     height: 50px;
     background-color: #ffc107;
@@ -56,6 +60,8 @@ export default {};
   }
   .btn-search {
     margin: 0 auto;
+    border: none;
+    background-color: transparent;
   }
 }
 </style>

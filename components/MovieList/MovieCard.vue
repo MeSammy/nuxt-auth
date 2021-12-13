@@ -1,8 +1,15 @@
 <template>
-  <divl class="movie-card">
-    {{ movieDetail.title }}
-    <b-img :src="imageUrl" />
-  </divl>
+  <div class="movie-card" @click="handleClick">
+    <b-img :src="imageUrl" class="movie-card--img" />
+    <div class="movie-card--bottom">
+      <div class="movie-card--title">
+        {{ movieDetail.title }}
+      </div>
+      <div class="movie-card--date">
+        {{ movieYear }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -16,11 +23,42 @@ export default {
   },
   computed: {
     imageUrl() {
-      console.log(TMTB_URL + this.movieDetail.backdrop_path);
-      return (this.imageUrl = TMTB_URL + this.movieDetail.backdrop_path);
+      return TMTB_URL + this.movieDetail.poster_path;
+    },
+    movieYear() {
+      return new Date(this.movieDetail.release_date).getFullYear();
+    },
+  },
+  methods: {
+    handleClick() {
+      this.$router.push(`${this.movieDetail.id}`);
     },
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.movie-card {
+  cursor: pointer;
+  &--img {
+    border-radius: 20px;
+    height: 512px;
+    margin-bottom: 20px;
+  }
+  &--bottom {
+    margin-bottom: 40px;
+    border-radius: 20px;
+    height: 100px;
+    padding: 16px;
+    background-color: #1c1b1b;
+  }
+  &--title {
+    color: #e9e955;
+    font-weight: bold;
+  }
+  &--date {
+    padding-top: 4px;
+    color: #9ac8f1;
+  }
+}
+</style>

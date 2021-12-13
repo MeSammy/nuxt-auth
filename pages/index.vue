@@ -1,53 +1,93 @@
 <template>
-  <div class="container">
-    <h1>Movie List</h1>
+  <div class="container-fluid movie-container">
+    <h1 class="my-5">Trending Movies</h1>
 
-    <b-container class="bv-example-row">
+    <b-container fluid class="bv-example-row" v-if="!loading">
       <b-row>
-        <b-col md="4" v-for="movie in movieList" :key="movie.id">
+        <b-col md="3" v-for="movie in movieList" :key="movie.id">
           <MovieCard :movie-detail="movie" />
         </b-col>
       </b-row>
+      <b-row v-if="totalPages > 1">
+        <b-col>
+          <div class="overflow-auto mb-5">
+            <b-pagination-nav
+              :link-gen="changePage"
+              :number-of-pages="totalPages"
+              class="data-table-pagination float-sm-right"
+            ></b-pagination-nav>
+          </div>
+        </b-col>
+      </b-row>
     </b-container>
+    <Loading v-else />
   </div>
 </template>
 
 <script>
 import MovieCard from "../components/MovieList/MovieCard.vue";
+import Loading from "../components/Loading.vue";
 
 export default {
   components: {
     MovieCard,
+    Loading,
   },
   data: () => ({
+    loading: false,
     movieList: [],
+    totalPages: 0,
+    perPage: 10,
+    currentPage: 1,
   }),
   created() {
     this.fetchListing();
   },
   methods: {
-    async fetchListing() {
+    async fetchListing(pageNumber = 0, search = null) {
       let partsParams = {
-        page: 1,
+        page: pageNumber > 0 ? pageNumber : this.$route.query.page,
       };
+      let movieUrl = "/getMovies";
+      let searchQuery = search ?? this.$route.query.search;
+
+      if (searchQuery) {
+        partsParams.search = searchQuery;
+        movieUrl = "/getMoviesByQuery";
+      }
+
       try {
-        let results = await this.$axios.$get("/getMovies", {
+        this.loading = true;
+        this.movieList = [];
+        let results = await this.$axios.$get(movieUrl, {
           params: {
             ...partsParams,
           },
         });
 
         this.movieList = results.data.results;
+        this.totalPages = results.data.total_pages;
+        this.currentPage = results.data.page;
       } catch (error) {
         console.log(error);
       }
+
+      this.loading = false;
+    },
+    changePage(pageNumber) {
+      if (this.currentPage === pageNumber.toString()) {
+        return;
+      }
+
+      this.page = pageNumber;
+      return pageNumber === 1 ? "?" : `?page=${pageNumber}`;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.container-body {
-  background-color: black;
+.movie-container {
+  max-width: 1508px;
 }
 </style>
