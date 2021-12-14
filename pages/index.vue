@@ -38,10 +38,35 @@ export default {
     movieList: [],
     totalPages: 0,
     perPage: 10,
-    currentPage: 1,
+    // currentPage: 1,
   }),
   created() {
-    this.fetchListing();
+    // this.fetchListing();
+  },
+  watchQuery: ["page", "search"],
+  async asyncData({ app, query }) {
+    let partsParams = query;
+    let movieUrl = "/getMovies";
+    let searchQuery = query.search;
+
+    if (searchQuery) {
+      partsParams.search = searchQuery;
+      movieUrl = "/getMoviesByQuery";
+    }
+
+    let loading = true;
+    let movieList = [];
+    let results = await app.$axios.$get(movieUrl, {
+      params: {
+        ...partsParams,
+      },
+    });
+
+    movieList = results.data.results;
+    let totalPages = results.data.total_pages;
+    let currentPage = results.data.page;
+    loading = false;
+    return { loading, totalPages, currentPage, movieList };
   },
   methods: {
     async fetchListing(pageNumber = 0, search = null) {
